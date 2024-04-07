@@ -2,45 +2,51 @@ from __future__ import annotations
 
 from abc import ABC
 from collections.abc import Callable
+from functools import cached_property
 
 import sublime
 import sublime_plugin
 
 
 class AbstractToggleConsoleLoggingCommand(sublime_plugin.ApplicationCommand, ABC):
-    @property
-    def logging_method_name(self) -> str:
-        # strips the leading "toggle_" from the command name
-        return self.name()[7:]
+    @cached_property
+    def logger_func_name(self) -> str:
+        """The logger function name in the `sublime` module. E.g., `"log_commands"`."""
+        return self.name()[7:]  # strips the leading "toggle_" from the command name
+
+    @cached_property
+    def logger_status_getter(self) -> Callable[[], bool] | None:
+        """The getter function to check the status of the logger. E.g., `sublime.get_log_commands`."""
+        return getattr(sublime, f"get_{self.logger_func_name}", None)
+
+    @cached_property
+    def logger_status_setter(self) -> Callable[..., None] | None:
+        """The setter function to set/toggle the logger status. E.g., `sublime.log_commands`."""
+        return getattr(sublime, self.logger_func_name, None)
 
     @property
-    def logging_method(self) -> Callable[..., None] | None:
-        return getattr(sublime, self.logging_method_name, None)
-
-    @property
-    def logging_status_method(self) -> Callable[[], bool] | None:
-        return getattr(sublime, f"get_{self.logging_method_name}", None)
+    def logger_status(self) -> bool | None:
+        """The current status of the logger. `None` if there is no such logger."""
+        return self.logger_status_getter() if self.logger_status_getter else None
 
     def description(self) -> str:
-        # "toogle_log_fps" => "Toggle log fps"
-        return self.name().replace("_", " ").capitalize()
+        # "toogle_log_fps" => "Toggle Log FPS"
+        return self.name().replace("_", " ").title().replace("Fps", "FPS")
 
     def is_checked(self) -> bool:
-        return (self.logging_status_method)() if self.logging_status_method else False
+        return bool(self.logger_status)
 
     def is_enabled(self) -> bool:
-        try:
-            return bool(self.logging_method and self.logging_status_method)
-        except AttributeError:
-            return False
+        return bool(self.logger_status_getter and self.logger_status_setter)
 
     is_visible = is_enabled
 
     def run(self, enable: bool | None = None) -> None:
-        if not self.logging_method:
-            return
-        args = tuple() if enable is None else (enable,)
-        self.logging_method(*args)
+        if self.logger_status_setter:
+            if enable is None:
+                self.logger_status_setter()
+            else:
+                self.logger_status_setter(enable)
 
 
 class ToggleLogBuildSystemsCommand(AbstractToggleConsoleLoggingCommand):

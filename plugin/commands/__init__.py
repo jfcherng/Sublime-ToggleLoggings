@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from .clear_console import ClearConsoleCommand
 from .console_loggings import (
     ToggleLogBuildSystemsCommand,

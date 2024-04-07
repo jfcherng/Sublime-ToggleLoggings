@@ -13,5 +13,5 @@ class ClearConsoleCommand(sublime_plugin.ApplicationCommand):
         settings = sublime.load_settings("Preferences.sublime-settings")
         current: int = settings.get(ST_SETTING_CONSOLE_MAX_HISTORY_LINES)
         settings.set(ST_SETTING_CONSOLE_MAX_HISTORY_LINES, 1)
-        print("")
+        print()
         settings.set(ST_SETTING_CONSOLE_MAX_HISTORY_LINES, current)
