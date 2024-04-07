@@ -7,16 +7,24 @@ from pathlib import Path
 import sublime
 import sublime_plugin
 
+assert __package__
+
 PACKAGE_NAME = __package__.partition(".")[0]
 
 
 @lru_cache
 def _get_folder_map() -> dict[str, str]:
+    def may_resolve_path(path: Path) -> Path:
+        try:
+            return path.resolve()  # will fail on a Direct-IO disk
+        except OSError:
+            return path
+
     cache_path = Path(sublime.cache_path())
     packages_path = Path(sublime.packages_path())
 
     return {
-        name: str(path.resolve())
+        name: str(may_resolve_path(path))
         for name, path in (
             # from OS
             ("home", Path.home()),
