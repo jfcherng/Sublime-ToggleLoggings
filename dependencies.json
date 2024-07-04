@@ -1,6 +1,7 @@
 {
     "*": {
         "*": [
+            "more-itertools",
             "typing-extensions"
         ]
     }
