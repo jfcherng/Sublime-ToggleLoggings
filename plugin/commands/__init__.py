@@ -13,7 +13,7 @@ from .console_loggings import (
 from .open_git_repo_on_web import OpenGitRepoOnWebCommand
 from .open_sublime_text_dir import OpenSublimeTextDirCommand
 from .pin_tab import CloseUnpinnedTabsCommand, PinTabCommand, UnpinTabCommand
-from .restart_in_safe_mode import RestartInSafeModeCommand
+from .start_in_safe_mode import StartInSafeModeCommand
 
 __all__ = (
     "ClearConsoleCommand",
@@ -21,7 +21,7 @@ __all__ = (
     "OpenGitRepoOnWebCommand",
     "OpenSublimeTextDirCommand",
     "PinTabCommand",
-    "RestartInSafeModeCommand",
+    "StartInSafeModeCommand",
     "ToggleLogBuildSystemsCommand",
     "ToggleLogCommandsCommand",
     "ToggleLogControlTreeCommand",
